@@ -120,6 +120,7 @@ router.post('/', authenticate, async (req, res) => {
     );
 
     res.status(201).json({ ...invoice, items: itemsResult.rows });
+    sendLog('invoices-service', `Invoice created: ${invoiceNumber} for customer: ${customer.name}, total: ${total.toFixed(2)} RON`);
   } catch (err) {
     if (err.response) {
       return res.status(err.response.status).json({ error: err.response.data.error });
@@ -146,6 +147,7 @@ router.patch('/:id/status', authenticate, async (req, res) => {
       return res.status(404).json({ error: 'Invoice not found' });
     }
     res.json(result.rows[0]);
+    sendLog('invoices-service', `Invoice ${req.params.id} status updated to: ${status}`);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

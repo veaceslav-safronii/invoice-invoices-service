@@ -1,4 +1,17 @@
 require('dotenv').config();
+
+const net = require('net');
+global.sendLog = (service, message) => {
+  try {
+    const client = new net.Socket();
+    client.connect(5044, 'logstash', () => {
+      client.write(JSON.stringify({ service, message, timestamp: new Date().toISOString() }) + '\n');
+      client.destroy();
+    });
+    client.on('error', () => {});
+  } catch (e) {}
+};
+
 const express = require('express');
 const { initDb } = require('./db');
 const invoicesRoutes = require('./routes/invoices');
